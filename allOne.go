@@ -24,9 +24,6 @@ func (all *AllOne) insert(key string) {
 	if all.head != nil {
 		all.head.prev = &n
 	}
-	if all.head != nil {
-		fmt.Printf("Changed old head prev to  %s\n", all.head.prev.key)
-	}
 	all.head = &n
 	if all.tail == nil {
 		all.tail = &n
