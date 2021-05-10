@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Node struct {
 	key   string
 	count int
@@ -19,6 +21,12 @@ func Constructor() AllOne {
 
 func (all *AllOne) insert(key string) {
 	n := Node{count: 1, key: key, next: all.head, prev: nil}
+	if all.head != nil {
+		all.head.prev = &n
+	}
+	if all.head != nil {
+		fmt.Printf("Changed old head prev to  %s\n", all.head.prev.key)
+	}
 	all.head = &n
 	if all.tail == nil {
 		all.tail = &n
@@ -27,12 +35,19 @@ func (all *AllOne) insert(key string) {
 	return
 }
 
-func (all *AllOne) remove() {
+func (all *AllOne) remove(n *Node) {
 	if all.head == all.tail {
 		all.head = nil
 		all.tail = nil
+	} else if n == all.head {
+		n.next.prev = nil
+		all.head = n.next
+	} else if n == all.tail {
+		n.prev.next = nil
+		all.tail = n.prev
 	} else {
-		all.head = all.head.next
+		n.prev.next = n.next
+		n.next.prev = n.prev
 	}
 }
 
@@ -52,6 +67,7 @@ func (all *AllOne) shiftRight(n *Node) {
 			n.prev = all.tail
 			all.tail.next = n
 			all.tail = n
+			all.tail.next = nil
 		} else {
 			n.prev = curr.prev
 			n.next = curr
@@ -77,6 +93,7 @@ func (all *AllOne) shiftLeft(n *Node) {
 			n.next = all.head
 			all.head.prev = n
 			all.head = n
+			all.head.prev = nil
 		} else {
 			n.prev = curr
 			n.next = curr.next
@@ -101,7 +118,7 @@ func (all *AllOne) Dec(key string) {
 		n.count--
 		all.shiftLeft(n)
 	} else {
-		all.remove()
+		all.remove(n)
 	}
 }
 
@@ -117,4 +134,42 @@ func (all *AllOne) GetMinKey() string {
 		return ""
 	}
 	return all.head.key
+}
+
+func (all *AllOne) print() {
+	for n := all.head; n != nil; n = n.next {
+		if n != all.tail {
+			fmt.Printf("%s,%d -> ", n.key, n.count)
+		} else {
+			fmt.Printf("%s,%d ", n.key, n.count)
+		}
+	}
+	fmt.Println()
+}
+
+func main() {
+	a := Constructor()
+	a.Inc("hello")
+	a.print()
+	a.Inc("world")
+	a.print()
+	a.Inc("hello")
+	a.print()
+
+	a.Dec("world")
+	a.print()
+
+	a.Inc("hello")
+	a.print()
+	a.Inc("leet")
+	a.print()
+
+	a.Dec("hello")
+	a.print()
+	a.Dec("hello")
+	a.print()
+	a.Dec("hello")
+	a.print()
+
+	fmt.Print(a.GetMaxKey())
 }
